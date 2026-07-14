@@ -2,13 +2,39 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=2.0, minimum-scale=0.5">
-    <title>Крестики-нолики • PDA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover, maximum-scale=1.0, minimum-scale=1.0">
+    
+    <!-- Важно для iOS полноэкранного режима -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Крестики-нолики">
+    
+    <!-- Для Android Chrome -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#d9cdb3">
+    
+    <title>Крестики-нолики</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            /* Заполняем весь экран, включая область под вырезом камеры */
+            height: 100vh;
+            height: 100dvh; /* динамическая высота для мобильных */
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
         }
 
         body {
@@ -17,14 +43,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-            /* лёгкий ретро-оттенок под PDA */
             background: linear-gradient(145deg, #e8e0d5 0%, #faf5ed 100%);
+            /* Безопасные отступы для современных телефонов */
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
         }
 
-        /* PDA-подобная карточка */
         .pda {
             max-width: 380px;
             width: 100%;
@@ -38,9 +61,12 @@
             padding: 25px 22px 30px;
             border: 1px solid #b7a17c;
             position: relative;
+            /* Адаптация под разную высоту экрана */
+            max-height: 95vh;
+            max-height: 95dvh;
+            overflow-y: auto;
         }
 
-        /* декоративный динамик/верхняя полоса */
         .pda::before {
             content: "";
             display: block;
@@ -70,7 +96,7 @@
         }
 
         h1 {
-            font-size: 2.2rem;
+            font-size: clamp(1.8rem, 5vw, 2.2rem);
             letter-spacing: 3px;
             text-transform: uppercase;
             color: #2f3a18;
@@ -86,7 +112,7 @@
             border-radius: 40px;
             padding: 10px 22px;
             margin: 5px 0 16px;
-            font-size: 1.25rem;
+            font-size: clamp(1rem, 4vw, 1.25rem);
             font-weight: bold;
             color: #1e3309;
             box-shadow: inset 0 2px 6px rgba(0,0,0,0.2);
@@ -103,7 +129,7 @@
             background: transparent;
             margin: 5px 0 18px;
             width: 100%;
-            max-width: 280px;
+            max-width: min(280px, 80vw);
         }
 
         .cell {
@@ -114,7 +140,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3.2rem;
+            font-size: clamp(2.5rem, 8vw, 3.2rem);
             font-weight: bold;
             color: #2c3a14;
             box-shadow: 
@@ -165,9 +191,9 @@
             background: linear-gradient(180deg, #e7cfaa 0%, #c6a477 100%);
             border: none;
             border-radius: 40px;
-            padding: 12px 22px;
+            padding: clamp(10px, 2vh, 12px) clamp(18px, 5vw, 22px);
             font-weight: bold;
-            font-size: 1rem;
+            font-size: clamp(0.85rem, 3vw, 1rem);
             letter-spacing: 0.8px;
             color: #2d2818;
             box-shadow: 
@@ -183,6 +209,7 @@
             gap: 4px;
             flex: 1 1 auto;
             min-width: 100px;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .btn:active {
@@ -197,28 +224,87 @@
             color: #231f17;
         }
 
-        /* стили для ничьей/победы */
         .winner-highlight {
             background: #f9e076 !important;
             background: linear-gradient(145deg, #ffec9e, #f7d44a) !important;
             box-shadow: 0 0 18px #ffbb2e;
             transition: 0.2s;
         }
+
+        /* Кнопка полноэкранного режима */
+        .fullscreen-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.5);
+            border-radius: 20px;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            color: #2d2818;
+            z-index: 10;
+            transition: all 0.2s;
+        }
+
+        .fullscreen-btn:active {
+            background: rgba(255,255,255,0.6);
+            transform: scale(0.9);
+        }
+
+        /* Адаптация для очень маленьких экранов */
+        @media (max-height: 700px) {
+            .pda {
+                padding: 15px 18px 20px;
+            }
+            .screen {
+                padding: 15px 12px 14px;
+            }
+            h1 {
+                margin-bottom: 5px;
+            }
+            .status {
+                margin: 3px 0 10px;
+                padding: 8px 18px;
+            }
+            .board {
+                gap: 6px;
+                margin: 3px 0 12px;
+            }
+        }
+
+        @media (max-width: 350px) {
+            .pda {
+                border-radius: 35px;
+                padding: 15px 12px 20px;
+            }
+            .btn {
+                min-width: 80px;
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="pda">
+        <!-- Кнопка полноэкранного режима -->
+        <button class="fullscreen-btn" id="fullscreenToggle" title="Полный экран">⛶</button>
+        
         <div class="screen">
             <h1>⨉ 𝕏/𝕆 ⨉</h1>
             <div class="status" id="statusDisplay">Ход: ✕</div>
-            <div class="board" id="board">
-                <!-- Ячейки будут созданы в JS -->
-            </div>
+            <div class="board" id="board"></div>
             <div class="controls">
                 <button class="btn" id="newGameBtn">🔄 Новая</button>
                 <button class="btn reset-btn" id="resetScoreBtn">📊 Сброс</button>
             </div>
-            <div style="margin-top: 12px; font-weight: bold; display: flex; gap: 24px; justify-content: center; color: #2b3811;">
+            <div style="margin-top: 12px; font-weight: bold; display: flex; gap: 16px; justify-content: center; color: #2b3811; font-size: clamp(0.8rem, 2.5vw, 0.95rem);">
                 <span id="scoreX">✕ 0</span>
                 <span id="scoreO">◯ 0</span>
                 <span id="scoreDraw">Ничьи 0</span>
@@ -236,33 +322,78 @@
             const scoreDrawEl = document.getElementById('scoreDraw');
 
             let board = Array(9).fill(null);
-            let currentPlayer = 'X'; // X всегда начинает
+            let currentPlayer = 'X';
             let gameActive = true;
-            let winCells = []; // индексы победной линии
+            let winCells = [];
 
-            // Счет
             let scoreX = 0;
             let scoreO = 0;
             let draws = 0;
 
-            // Все выигрышные комбинации
             const winPatterns = [
-                [0,1,2], [3,4,5], [6,7,8], // строки
-                [0,3,6], [1,4,7], [2,5,8], // столбцы
-                [0,4,8], [2,4,6]          // диагонали
+                [0,1,2], [3,4,5], [6,7,8],
+                [0,3,6], [1,4,7], [2,5,8],
+                [0,4,8], [2,4,6]
             ];
+
+            // ---------- Полноэкранный режим ----------
+            const fullscreenBtn = document.getElementById('fullscreenToggle');
+            
+            function toggleFullscreen() {
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    // Вход в полноэкранный режим
+                    const docEl = document.documentElement;
+                    if (docEl.requestFullscreen) {
+                        docEl.requestFullscreen();
+                    } else if (docEl.webkitRequestFullscreen) {
+                        docEl.webkitRequestFullscreen();
+                    }
+                    fullscreenBtn.textContent = '⛶';
+                } else {
+                    // Выход из полноэкранного режима
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    }
+                    fullscreenBtn.textContent = '⛶';
+                }
+            }
+
+            fullscreenBtn.addEventListener('click', toggleFullscreen);
+
+            // Обновление иконки при изменении состояния
+            document.addEventListener('fullscreenchange', updateFullscreenIcon);
+            document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+            
+            function updateFullscreenIcon() {
+                if (document.fullscreenElement || document.webkitFullscreenElement) {
+                    fullscreenBtn.textContent = '🗗';
+                } else {
+                    fullscreenBtn.textContent = '⛶';
+                }
+            }
+
+            // Автоматический вход в полноэкранный режим при первом касании
+            let autoFullscreenAttempted = false;
+            document.addEventListener('touchstart', function initFullscreen() {
+                if (!autoFullscreenAttempted) {
+                    autoFullscreenAttempted = true;
+                    const docEl = document.documentElement;
+                    if (docEl.requestFullscreen) {
+                        docEl.requestFullscreen().catch(() => {});
+                    } else if (docEl.webkitRequestFullscreen) {
+                        docEl.webkitRequestFullscreen();
+                    }
+                }
+            }, { once: true });
 
             // ---------- Функции отрисовки ----------
             function renderBoard() {
-                // Очищаем доску и пересоздаём ячейки
                 boardEl.innerHTML = '';
-                winCells = []; // сброс подсветки
+                winCells = [];
 
-                // Если игра завершена победой, находим победную комбинацию
                 if (!gameActive && board.includes('X') !== board.includes('O')) {
-                    // Определяем победителя (последний ход)
-                    const winner = currentPlayer === 'X' ? 'O' : 'X'; // текущий игрок переключился после хода
-                    // Но проще проверить паттерны
                     for (let pattern of winPatterns) {
                         const [a,b,c] = pattern;
                         if (board[a] && board[a] === board[b] && board[b] === board[c]) {
@@ -270,9 +401,6 @@
                             break;
                         }
                     }
-                } else if (!gameActive) {
-                    // ничья – без подсветки
-                    winCells = [];
                 }
 
                 for (let i = 0; i < 9; i++) {
@@ -283,12 +411,10 @@
                         cell.classList.add(board[i] === 'X' ? 'x-move' : 'o-move');
                     }
                     
-                    // Подсветка победных ячеек
                     if (winCells.includes(i)) {
                         cell.classList.add('winner-highlight');
                     }
 
-                    // Блокировка кликов при неактивной игре
                     if (!gameActive || board[i] !== null) {
                         cell.classList.add('disabled');
                     } else {
@@ -298,14 +424,12 @@
                     boardEl.appendChild(cell);
                 }
 
-                // дополнительно управляем классом game-over у board
                 if (!gameActive) {
                     boardEl.classList.add('game-over');
                 } else {
                     boardEl.classList.remove('game-over');
                 }
 
-                // Обновление статуса
                 updateStatusMessage();
                 updateScoreDisplay();
             }
@@ -318,7 +442,6 @@
                     } else if (isBoardFull()) {
                         statusEl.textContent = 'Ничья!';
                     } else {
-                        // на случай если игра остановлена без результата (не должно случиться)
                         statusEl.textContent = 'Игра остановлена';
                     }
                 } else {
@@ -332,7 +455,6 @@
                 scoreDrawEl.textContent = `Ничьи ${draws}`;
             }
 
-            // Проверка победителя без изменения состояния (возвращает 'X', 'O' или null)
             function checkWinnerDirect() {
                 for (let pattern of winPatterns) {
                     const [a,b,c] = pattern;
@@ -347,24 +469,19 @@
                 return board.every(cell => cell !== null);
             }
 
-            // ---------- Логика хода ----------
             function handleCellClick(index) {
                 if (!gameActive || board[index] !== null) return;
 
-                // Совершаем ход
                 board[index] = currentPlayer;
                 
-                // Проверка окончания игры
                 const winner = checkWinnerDirect();
                 if (winner) {
                     gameActive = false;
-                    // Счет обновляем
                     if (winner === 'X') {
                         scoreX++;
                     } else {
                         scoreO++;
                     }
-                    // перерисовка с подсветкой
                     renderBoard();
                     return;
                 } else if (isBoardFull()) {
@@ -374,40 +491,37 @@
                     return;
                 }
 
-                // Переключение игрока
                 currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
                 renderBoard();
             }
 
-            // Сброс только текущей партии (сохраняя счет)
             function resetGame() {
                 board = Array(9).fill(null);
-                currentPlayer = 'X'; // X начинает
+                currentPlayer = 'X';
                 gameActive = true;
                 winCells = [];
                 renderBoard();
             }
 
-            // Полный сброс игры и счета
             function resetFullGame() {
                 resetGame();
                 scoreX = 0;
                 scoreO = 0;
                 draws = 0;
                 updateScoreDisplay();
-                // принудительно обновить статус (он и так обновится в renderBoard)
                 renderBoard();
             }
 
-            // ---------- Инициализация и кнопки ----------
+            // ---------- Инициализация ----------
             document.getElementById('newGameBtn').addEventListener('click', resetGame);
             document.getElementById('resetScoreBtn').addEventListener('click', resetFullGame);
 
-            // Первичная отрисовка
-            renderBoard();
+            // Предотвращение двойного тапа и нежелательного зума
+            document.addEventListener('dblclick', function(e) {
+                e.preventDefault();
+            }, { passive: false });
 
-            // Дополнительно: делаем так, чтобы при клике на уже завершённую доску не было действий,
-            // но это уже обработано классами disabled и game-over.
+            renderBoard();
         })();
     </script>
 </body>
