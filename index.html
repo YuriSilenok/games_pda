@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, maximum-scale=2.0, minimum-scale=0.5">
+    <title>Крестики-нолики • PDA</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f5efe8;
+            font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            /* лёгкий ретро-оттенок под PDA */
+            background: linear-gradient(145deg, #e8e0d5 0%, #faf5ed 100%);
+        }
+
+        /* PDA-подобная карточка */
+        .pda {
+            max-width: 380px;
+            width: 100%;
+            background: #d9cdb3;
+            background: linear-gradient(180deg, #e3d7c0 0%, #cfbe9a 100%);
+            border-radius: 48px 48px 36px 36px;
+            box-shadow: 
+                0 20px 35px rgba(0,0,0,0.25),
+                inset 0 2px 8px rgba(255,255,255,0.7),
+                inset 0 -4px 8px rgba(0,0,0,0.2);
+            padding: 25px 22px 30px;
+            border: 1px solid #b7a17c;
+            position: relative;
+        }
+
+        /* декоративный динамик/верхняя полоса */
+        .pda::before {
+            content: "";
+            display: block;
+            width: 70px;
+            height: 6px;
+            background: #4a3e2c;
+            border-radius: 20px;
+            margin: 0 auto 18px auto;
+            background: radial-gradient(circle at 30% 30%, #6b5d48, #2f281a);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,200,0.5);
+        }
+
+        .screen {
+            background: #9fbb89;
+            background: radial-gradient(circle at 20% 20%, #b8d89b, #7f9a62);
+            border-radius: 28px;
+            padding: 20px 16px 18px;
+            box-shadow: 
+                inset 0 0 18px rgba(0,0,0,0.4),
+                0 8px 12px rgba(0,0,0,0.3);
+            border: 2px solid #4d5437;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #1e2b0c;
+            font-weight: 500;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #2f3a18;
+            text-shadow: 0 1px 2px rgba(255,255,200,0.7);
+            margin-bottom: 10px;
+            font-weight: 700;
+            word-break: break-word;
+            text-align: center;
+        }
+
+        .status {
+            background: #e7f0da;
+            border-radius: 40px;
+            padding: 10px 22px;
+            margin: 5px 0 16px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: #1e3309;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.2);
+            border: 1px solid #6a7a4c;
+            text-align: center;
+            min-width: 200px;
+            letter-spacing: 0.5px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            background: transparent;
+            margin: 5px 0 18px;
+            width: 100%;
+            max-width: 280px;
+        }
+
+        .cell {
+            aspect-ratio: 1 / 1;
+            background: #edf5e1;
+            background: linear-gradient(145deg, #f0f7e6, #d9e4c3);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.2rem;
+            font-weight: bold;
+            color: #2c3a14;
+            box-shadow: 
+                inset 0 -4px 5px rgba(0,0,0,0.15),
+                0 5px 8px rgba(0,0,0,0.2);
+            cursor: pointer;
+            transition: all 0.08s ease;
+            border: 2px solid #6d7e4c;
+            user-select: none;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .cell:active {
+            transform: scale(0.94);
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .cell.x-move {
+            color: #b64516;
+            text-shadow: 0 0 6px #ffb27a;
+        }
+
+        .cell.o-move {
+            color: #1f4f6e;
+            text-shadow: 0 0 6px #99d6ff;
+        }
+
+        .cell.disabled {
+            pointer-events: none;
+            opacity: 0.9;
+        }
+
+        .board.game-over .cell:not(.disabled) {
+            pointer-events: none;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        .btn {
+            background: #d4b68a;
+            background: linear-gradient(180deg, #e7cfaa 0%, #c6a477 100%);
+            border: none;
+            border-radius: 40px;
+            padding: 12px 22px;
+            font-weight: bold;
+            font-size: 1rem;
+            letter-spacing: 0.8px;
+            color: #2d2818;
+            box-shadow: 
+                0 5px 0 #7a684b,
+                0 8px 12px rgba(0,0,0,0.25);
+            border: 1px solid #b29464;
+            cursor: pointer;
+            transition: all 0.08s ease;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            flex: 1 1 auto;
+            min-width: 100px;
+        }
+
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #6b5a3e, 0 5px 10px rgba(0,0,0,0.2);
+            background: linear-gradient(180deg, #dabd88 0%, #b6905a 100%);
+        }
+
+        .btn.reset-btn {
+            background: linear-gradient(180deg, #c7b299 0%, #a0896c 100%);
+            border-color: #7e6a51;
+            color: #231f17;
+        }
+
+        /* стили для ничьей/победы */
+        .winner-highlight {
+            background: #f9e076 !important;
+            background: linear-gradient(145deg, #ffec9e, #f7d44a) !important;
+            box-shadow: 0 0 18px #ffbb2e;
+            transition: 0.2s;
+        }
+    </style>
+</head>
+<body>
+    <div class="pda">
+        <div class="screen">
+            <h1>⨉ 𝕏/𝕆 ⨉</h1>
+            <div class="status" id="statusDisplay">Ход: ✕</div>
+            <div class="board" id="board">
+                <!-- Ячейки будут созданы в JS -->
+            </div>
+            <div class="controls">
+                <button class="btn" id="newGameBtn">🔄 Новая</button>
+                <button class="btn reset-btn" id="resetScoreBtn">📊 Сброс</button>
+            </div>
+            <div style="margin-top: 12px; font-weight: bold; display: flex; gap: 24px; justify-content: center; color: #2b3811;">
+                <span id="scoreX">✕ 0</span>
+                <span id="scoreO">◯ 0</span>
+                <span id="scoreDraw">Ничьи 0</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ---------- Игровое состояние ----------
+            const boardEl = document.getElementById('board');
+            const statusEl = document.getElementById('statusDisplay');
+            const scoreXEl = document.getElementById('scoreX');
+            const scoreOEl = document.getElementById('scoreO');
+            const scoreDrawEl = document.getElementById('scoreDraw');
+
+            let board = Array(9).fill(null);
+            let currentPlayer = 'X'; // X всегда начинает
+            let gameActive = true;
+            let winCells = []; // индексы победной линии
+
+            // Счет
+            let scoreX = 0;
+            let scoreO = 0;
+            let draws = 0;
+
+            // Все выигрышные комбинации
+            const winPatterns = [
+                [0,1,2], [3,4,5], [6,7,8], // строки
+                [0,3,6], [1,4,7], [2,5,8], // столбцы
+                [0,4,8], [2,4,6]          // диагонали
+            ];
+
+            // ---------- Функции отрисовки ----------
+            function renderBoard() {
+                // Очищаем доску и пересоздаём ячейки
+                boardEl.innerHTML = '';
+                winCells = []; // сброс подсветки
+
+                // Если игра завершена победой, находим победную комбинацию
+                if (!gameActive && board.includes('X') !== board.includes('O')) {
+                    // Определяем победителя (последний ход)
+                    const winner = currentPlayer === 'X' ? 'O' : 'X'; // текущий игрок переключился после хода
+                    // Но проще проверить паттерны
+                    for (let pattern of winPatterns) {
+                        const [a,b,c] = pattern;
+                        if (board[a] && board[a] === board[b] && board[b] === board[c]) {
+                            winCells = pattern;
+                            break;
+                        }
+                    }
+                } else if (!gameActive) {
+                    // ничья – без подсветки
+                    winCells = [];
+                }
+
+                for (let i = 0; i < 9; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    if (board[i]) {
+                        cell.textContent = board[i] === 'X' ? '✕' : '◯';
+                        cell.classList.add(board[i] === 'X' ? 'x-move' : 'o-move');
+                    }
+                    
+                    // Подсветка победных ячеек
+                    if (winCells.includes(i)) {
+                        cell.classList.add('winner-highlight');
+                    }
+
+                    // Блокировка кликов при неактивной игре
+                    if (!gameActive || board[i] !== null) {
+                        cell.classList.add('disabled');
+                    } else {
+                        cell.addEventListener('click', () => handleCellClick(i));
+                    }
+                    
+                    boardEl.appendChild(cell);
+                }
+
+                // дополнительно управляем классом game-over у board
+                if (!gameActive) {
+                    boardEl.classList.add('game-over');
+                } else {
+                    boardEl.classList.remove('game-over');
+                }
+
+                // Обновление статуса
+                updateStatusMessage();
+                updateScoreDisplay();
+            }
+
+            function updateStatusMessage() {
+                if (!gameActive) {
+                    const winner = checkWinnerDirect();
+                    if (winner) {
+                        statusEl.textContent = `Победил: ${winner === 'X' ? '✕' : '◯'}`;
+                    } else if (isBoardFull()) {
+                        statusEl.textContent = 'Ничья!';
+                    } else {
+                        // на случай если игра остановлена без результата (не должно случиться)
+                        statusEl.textContent = 'Игра остановлена';
+                    }
+                } else {
+                    statusEl.textContent = `Ход: ${currentPlayer === 'X' ? '✕' : '◯'}`;
+                }
+            }
+
+            function updateScoreDisplay() {
+                scoreXEl.textContent = `✕ ${scoreX}`;
+                scoreOEl.textContent = `◯ ${scoreO}`;
+                scoreDrawEl.textContent = `Ничьи ${draws}`;
+            }
+
+            // Проверка победителя без изменения состояния (возвращает 'X', 'O' или null)
+            function checkWinnerDirect() {
+                for (let pattern of winPatterns) {
+                    const [a,b,c] = pattern;
+                    if (board[a] && board[a] === board[b] && board[b] === board[c]) {
+                        return board[a];
+                    }
+                }
+                return null;
+            }
+
+            function isBoardFull() {
+                return board.every(cell => cell !== null);
+            }
+
+            // ---------- Логика хода ----------
+            function handleCellClick(index) {
+                if (!gameActive || board[index] !== null) return;
+
+                // Совершаем ход
+                board[index] = currentPlayer;
+                
+                // Проверка окончания игры
+                const winner = checkWinnerDirect();
+                if (winner) {
+                    gameActive = false;
+                    // Счет обновляем
+                    if (winner === 'X') {
+                        scoreX++;
+                    } else {
+                        scoreO++;
+                    }
+                    // перерисовка с подсветкой
+                    renderBoard();
+                    return;
+                } else if (isBoardFull()) {
+                    gameActive = false;
+                    draws++;
+                    renderBoard();
+                    return;
+                }
+
+                // Переключение игрока
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                renderBoard();
+            }
+
+            // Сброс только текущей партии (сохраняя счет)
+            function resetGame() {
+                board = Array(9).fill(null);
+                currentPlayer = 'X'; // X начинает
+                gameActive = true;
+                winCells = [];
+                renderBoard();
+            }
+
+            // Полный сброс игры и счета
+            function resetFullGame() {
+                resetGame();
+                scoreX = 0;
+                scoreO = 0;
+                draws = 0;
+                updateScoreDisplay();
+                // принудительно обновить статус (он и так обновится в renderBoard)
+                renderBoard();
+            }
+
+            // ---------- Инициализация и кнопки ----------
+            document.getElementById('newGameBtn').addEventListener('click', resetGame);
+            document.getElementById('resetScoreBtn').addEventListener('click', resetFullGame);
+
+            // Первичная отрисовка
+            renderBoard();
+
+            // Дополнительно: делаем так, чтобы при клике на уже завершённую доску не было действий,
+            // но это уже обработано классами disabled и game-over.
+        })();
+    </script>
+</body>
+</html>
