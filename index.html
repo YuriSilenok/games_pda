@@ -69,28 +69,28 @@
       align-items: center;
       min-height: 100vh;
       min-height: -webkit-fill-available;
-      padding: 10px;
+      padding: 8px;
     }
 
     .game-container {
       background: rgba(20, 30, 45, 0.85);
       backdrop-filter: blur(15px);
       -webkit-backdrop-filter: blur(15px);
-      border-radius: 20px;
-      padding: 12px;
+      border-radius: 16px;
+      padding: 10px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
       border: 1px solid rgba(255, 255, 255, 0.2);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
       max-width: 600px;
     }
 
     h1 {
       color: #e6c88a;
-      font-size: clamp(1rem, 4vw, 1.5rem);
+      font-size: clamp(1rem, 4vw, 1.4rem);
       letter-spacing: 2px;
       font-weight: 500;
       text-align: center;
@@ -113,6 +113,7 @@
       background: #0a1620;
       box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
       transition: opacity 0.3s ease, transform 0.3s ease;
+      touch-action: manipulation;
     }
 
     #enemyCanvas {
@@ -158,7 +159,7 @@
     .toggle-btn {
       flex: 1;
       padding: 10px;
-      border-radius: 25px;
+      border-radius: 20px;
       border: 2px solid #d4a853;
       background: rgba(26, 42, 58, 0.8);
       color: #c0d0e0;
@@ -179,12 +180,12 @@
 
     .stats-panel {
       display: flex;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
       justify-content: center;
       background: rgba(0, 0, 0, 0.3);
-      border-radius: 15px;
-      padding: 8px 12px;
+      border-radius: 12px;
+      padding: 6px 10px;
       border: 1px solid rgba(255, 255, 255, 0.15);
       width: 100%;
       max-width: 500px;
@@ -193,16 +194,16 @@
     .stat-item {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 3px;
       color: #cddcec;
-      font-size: clamp(0.6rem, 2vw, 0.8rem);
+      font-size: clamp(0.6rem, 2vw, 0.75rem);
       font-weight: bold;
     }
 
     .counter {
       color: #ffd700;
       font-weight: bold;
-      min-width: 30px;
+      min-width: 28px;
       text-align: center;
     }
 
@@ -210,7 +211,7 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
       max-width: 500px;
     }
@@ -218,36 +219,41 @@
     button {
       background: linear-gradient(180deg, #e8bc6e 0%, #c48a35 100%);
       border: none;
-      padding: 10px 20px;
-      border-radius: 25px;
+      padding: 10px 16px;
+      border-radius: 20px;
       font-weight: bold;
-      font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+      font-size: clamp(0.7rem, 2.5vw, 0.85rem);
       letter-spacing: 1px;
       color: #0d1f2d;
-      box-shadow: 0 5px 0 #6b4518, 0 5px 12px black;
+      box-shadow: 0 4px 0 #6b4518, 0 4px 10px black;
       cursor: pointer;
       transition: all 0.08s ease;
       text-transform: uppercase;
       touch-action: manipulation;
       flex: 1;
-      min-width: 120px;
+      min-width: 100px;
+      white-space: nowrap;
     }
 
     button:active {
-      transform: translateY(3px);
-      box-shadow: 0 2px 0 #6b4518, 0 3px 8px black;
+      transform: translateY(2px);
+      box-shadow: 0 2px 0 #6b4518, 0 2px 6px black;
     }
 
     .message-area {
-      font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+      font-size: clamp(0.65rem, 2.5vw, 0.85rem);
       font-weight: bold;
       color: #ffe9b0;
       background: #0d1a26;
-      padding: 8px 12px;
-      border-radius: 20px;
+      padding: 8px 10px;
+      border-radius: 16px;
       text-align: center;
       box-shadow: inset 0 2px 8px #00000070;
       flex: 2;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .install-prompt {
@@ -255,7 +261,7 @@
       background: #2c3e50;
       color: #ffd700;
       padding: 8px 16px;
-      border-radius: 20px;
+      border-radius: 16px;
       font-size: 0.8rem;
       cursor: pointer;
       border: 1px solid #d4a853;
@@ -263,18 +269,40 @@
       text-align: center;
     }
 
+    /* Индикатор выстрела */
+    .shot-indicator {
+      position: fixed;
+      pointer-events: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.8);
+      transform: translate(-50%, -50%) scale(0);
+      animation: shotPulse 0.4s ease-out;
+      z-index: 1000;
+    }
+
+    @keyframes shotPulse {
+      0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+    }
+
     @media (max-width: 400px) {
       .game-container {
-        padding: 8px;
-        gap: 6px;
+        padding: 6px;
+        gap: 5px;
       }
       .toggle-btn {
         padding: 8px;
         font-size: 0.7rem;
       }
       button {
-        padding: 8px 12px;
-        font-size: 0.7rem;
+        padding: 8px 10px;
+        font-size: 0.65rem;
+      }
+      .stats-panel {
+        gap: 4px;
+        padding: 4px 6px;
       }
     }
   </style>
@@ -283,7 +311,7 @@
 <div class="game-container view-enemy" id="gameContainer">
   <h1>⚓ ШЕСТИГРАННЫЙ БОЙ ⚓</h1>
 
-  <div class="board-area">
+  <div class="board-area" id="boardArea">
     <canvas id="playerCanvas"></canvas>
     <canvas id="enemyCanvas"></canvas>
   </div>
@@ -308,7 +336,7 @@
     // ---------- PWA SERVICE WORKER ----------
     if ('serviceWorker' in navigator) {
       const swCode = `
-        const CACHE_NAME = 'hex-battle-v5';
+        const CACHE_NAME = 'hex-battle-v6';
         self.addEventListener('install', e => {
           e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['/'])).then(() => self.skipWaiting()));
         });
@@ -358,10 +386,12 @@
     let playerBoard = [], enemyBoard = [];
     let playerShips = [], enemyShips = [];
     let gameOver = false, playerTurn = true, gameStarted = false;
-    let currentView = 'enemy'; // 'enemy' или 'player'
+    let currentView = 'enemy';
     let canvasSize = 500, hexRadius = 20, hexHeight = 40, hexWidth = 34.64;
+    let isProcessingShot = false; // Флаг для предотвращения двойных выстрелов
 
     const gameContainer = document.getElementById('gameContainer');
+    const boardArea = document.getElementById('boardArea');
     const statusDiv = document.getElementById('statusMessage');
     const enemyStatsDiv = document.getElementById('enemyStats');
     const playerCanvas = document.getElementById('playerCanvas');
@@ -373,12 +403,11 @@
 
     // ---------- РАЗМЕРЫ ----------
     function updateSizes() {
-      const boardArea = document.querySelector('.board-area');
       const rect = boardArea.getBoundingClientRect();
       canvasSize = Math.floor(Math.min(rect.width, rect.height));
       if (canvasSize < 250) canvasSize = 250;
       
-      const padding = canvasSize * 0.05;
+      const padding = canvasSize * 0.04;
       const availableW = canvasSize - 2 * padding;
       const availableH = canvasSize - 2 * padding;
       
@@ -484,7 +513,7 @@
       if (view === 'player') {
         statusDiv.textContent = '🔍 Просмотр своего поля';
       } else if (gameStarted && !gameOver && playerTurn) {
-        statusDiv.textContent = 'Ваш ход. Стреляйте по врагу!';
+        statusDiv.textContent = '👆 Коснитесь поля для выстрела';
       }
     }
 
@@ -505,6 +534,16 @@
       enemyStatsDiv.innerHTML = html;
     }
 
+    // ---------- ВИЗУАЛЬНЫЙ ЭФФЕКТ ВЫСТРЕЛА ----------
+    function showShotEffect(clientX, clientY) {
+      const indicator = document.createElement('div');
+      indicator.className = 'shot-indicator';
+      indicator.style.left = clientX + 'px';
+      indicator.style.top = clientY + 'px';
+      document.body.appendChild(indicator);
+      setTimeout(() => indicator.remove(), 400);
+    }
+
     // ---------- ИГРОВЫЕ ДЕЙСТВИЯ ----------
     function checkSunk(ships, board) {
       for (let ship of ships) {
@@ -521,11 +560,32 @@
       return ships.every(s => s.hits >= s.size);
     }
 
-    function playerFire(row, col) {
-      if (!gameStarted || gameOver || !playerTurn || currentView !== 'enemy') return false;
-      if (enemyBoard[row][col].hit) {
-        statusDiv.textContent = '⚠️ Сюда уже стреляли!';
+    function playerFire(row, col, clientX, clientY) {
+      if (!gameStarted || gameOver || !playerTurn) {
+        if (!gameStarted) statusDiv.textContent = 'Нажмите "Новая игра"';
+        else if (gameOver) statusDiv.textContent = 'Игра завершена';
+        else statusDiv.textContent = '⏳ Дождитесь своего хода';
         return false;
+      }
+      
+      if (currentView !== 'enemy') {
+        switchView('enemy');
+        statusDiv.textContent = '👆 Теперь стреляйте по полю противника';
+        return false;
+      }
+      
+      if (isProcessingShot) return false;
+      
+      if (enemyBoard[row][col].hit) {
+        statusDiv.textContent = '⚠️ Сюда уже стреляли! Выберите другую клетку';
+        return false;
+      }
+
+      isProcessingShot = true;
+      
+      // Визуальный эффект выстрела
+      if (clientX !== undefined && clientY !== undefined) {
+        showShotEffect(clientX, clientY);
       }
 
       enemyBoard[row][col].hit = true;
@@ -541,25 +601,33 @@
       updateStats();
       
       if (sunk) {
-        statusDiv.textContent = `⚡ Потоплен ${sunk.size}-палубный! Осталось: ${enemyShips.filter(s=>s.hits<s.size).length} кораблей.`;
+        const remaining = enemyShips.filter(s => s.hits < s.size).length;
+        statusDiv.textContent = `⚡ Потоплен ${sunk.size}-палубный! Осталось: ${remaining} кораблей`;
       } else if (hit) {
-        statusDiv.textContent = '🎯 Попадание! Ходите ещё раз.';
+        statusDiv.textContent = '🎯 Попадание! Стреляйте ещё раз';
       } else {
-        statusDiv.textContent = '💧 Мимо. Ход противника.';
+        statusDiv.textContent = '💧 Мимо. Ход противника...';
       }
 
       drawBoth();
 
       if (fleetDestroyed(enemyShips)) {
-        gameOver = true; gameStarted = false;
-        statusDiv.textContent = '🏆 ВЫ ПОБЕДИЛИ!';
+        gameOver = true; 
+        gameStarted = false;
+        statusDiv.textContent = '🏆 ПОБЕДА! Весь флот противника уничтожен!';
         drawBoth();
+        isProcessingShot = false;
         return true;
       }
 
       if (!hit) {
         playerTurn = false;
-        setTimeout(enemyMove, 600);
+        setTimeout(() => {
+          enemyMove();
+          isProcessingShot = false;
+        }, 800);
+      } else {
+        isProcessingShot = false;
       }
       return true;
     }
@@ -589,17 +657,18 @@
       if (sunk) {
         statusDiv.textContent = `💥 Противник потопил ваш ${sunk.size}-палубный!`;
       } else if (hit) {
-        statusDiv.textContent = '😖 Противник попал! Стреляет снова.';
+        statusDiv.textContent = '😖 Противник попал! Стреляет снова...';
       } else {
-        statusDiv.textContent = '🌊 Противник промахнулся. Ваш ход.';
+        statusDiv.textContent = '🌊 Противник промахнулся. Ваш ход!';
         if (currentView === 'player') switchView('enemy');
       }
       
       drawBoth();
       
       if (fleetDestroyed(playerShips)) {
-        gameOver = true; gameStarted = false;
-        statusDiv.textContent = '💀 ВЫ ПРОИГРАЛИ.';
+        gameOver = true; 
+        gameStarted = false;
+        statusDiv.textContent = '💀 ПОРАЖЕНИЕ. Ваш флот уничтожен.';
         drawBoth();
         return;
       }
@@ -607,7 +676,7 @@
       if (!hit) {
         playerTurn = true;
       } else {
-        setTimeout(enemyMove, 500);
+        setTimeout(enemyMove, 600);
       }
     }
 
@@ -640,7 +709,7 @@
           ctx.fillStyle = color;
           ctx.fill();
           ctx.strokeStyle = '#8b7d5c';
-          ctx.lineWidth = 0.6;
+          ctx.lineWidth = 0.5;
           ctx.stroke();
 
           if (cell.hit && cell.shipId !== null) {
@@ -671,14 +740,25 @@
       drawBoard(ctxEnemy, enemyBoard, enemyShips, false);
     }
 
-    // ---------- ОБРАБОТКА КАСАНИЙ/КЛИКОВ ----------
+    // ---------- ОБРАБОТКА КАСАНИЙ ----------
     function getHexFromEvent(e) {
       const canvas = currentView === 'enemy' ? enemyCanvas : playerCanvas;
       const rect = canvas.getBoundingClientRect();
       const scaleX = canvasSize / rect.width;
       const scaleY = canvasSize / rect.height;
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      
+      let clientX, clientY;
+      if (e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+      } else if (e.changedTouches && e.changedTouches.length > 0) {
+        clientX = e.changedTouches[0].clientX;
+        clientY = e.changedTouches[0].clientY;
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      
       const mx = (clientX - rect.left) * scaleX;
       const my = (clientY - rect.top) * scaleY;
 
@@ -687,96 +767,136 @@
         for (let c = 0; c < COLS; c++) {
           const {x, y} = hexCenter(r, c);
           const d = Math.hypot(mx - x, my - y);
-          if (d < best.dist && d < hexRadius * 0.8) {
+          if (d < best.dist && d < hexRadius * 0.85) {
             best = { row: r, col: c, dist: d };
           }
         }
       }
-      return { row: best.row, col: best.col };
+      return { 
+        row: best.row, 
+        col: best.col, 
+        clientX: clientX, 
+        clientY: clientY 
+      };
     }
 
-    function handleCanvasTap(e) {
+    // Основной обработчик выстрела
+    function handleShot(e) {
       e.preventDefault();
+      e.stopPropagation();
       
-      if (currentView === 'enemy') {
-        if (!gameStarted || gameOver || !playerTurn) {
-          statusDiv.textContent = gameOver ? 'Игра завершена.' : 'Сейчас не ваш ход.';
-          return;
-        }
-        const {row, col} = getHexFromEvent(e);
-        if (row >= 0 && col >= 0) playerFire(row, col);
-      } else {
-        // В режиме просмотра своего поля показываем информацию
-        const {row, col} = getHexFromEvent(e);
-        if (row >= 0 && col >= 0) {
-          const cell = playerBoard[row][col];
-          if (cell.shipId !== null) {
-            const ship = playerShips.find(s => s.id === cell.shipId);
-            const status = ship.hits >= ship.size ? 'потоплен' : 
-                          cell.hit ? 'подбит' : 'цел';
-            statusDiv.textContent = `🚢 ${ship.size}-палубный корабль (${status})`;
-          } else if (cell.hit) {
-            statusDiv.textContent = '💧 Пустая клетка (промах противника)';
-          } else {
-            statusDiv.textContent = '🌊 Пустая клетка';
-          }
-        }
-      }
-    }
-
-    function handleCanvasSwipe(e) {
-      // Свайп влево/вправо для переключения полей
-      if (!e.touches || e.touches.length === 0) return;
-      const touch = e.touches[0];
-      if (!this._swipeStart) {
-        this._swipeStart = { x: touch.clientX, y: touch.clientY, time: Date.now() };
+      if (currentView !== 'enemy') {
+        switchView('enemy');
+        statusDiv.textContent = '👆 Теперь стреляйте по полю противника';
         return;
       }
       
-      const dx = touch.clientX - this._swipeStart.x;
-      const dy = touch.clientY - this._swipeStart.y;
-      const dt = Date.now() - this._swipeStart.time;
+      const { row, col, clientX, clientY } = getHexFromEvent(e);
+      if (row >= 0 && col >= 0) {
+        playerFire(row, col, clientX, clientY);
+      }
+    }
+
+    // Обработчик просмотра своего поля
+    function handlePlayerFieldTap(e) {
+      e.preventDefault();
+      e.stopPropagation();
       
-      if (dt < 500 && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+      if (currentView !== 'player') return;
+      
+      const { row, col } = getHexFromEvent(e);
+      if (row >= 0 && col >= 0) {
+        const cell = playerBoard[row][col];
+        if (cell.shipId !== null) {
+          const ship = playerShips.find(s => s.id === cell.shipId);
+          const status = ship.hits >= ship.size ? 'потоплен' : 
+                        cell.hit ? 'подбит' : 'цел';
+          statusDiv.textContent = `🚢 ${ship.size}-палубный (${status})`;
+        } else if (cell.hit) {
+          statusDiv.textContent = '💧 Промах противника';
+        } else {
+          statusDiv.textContent = '🌊 Пустая клетка';
+        }
+      }
+    }
+
+    // Свайп для переключения полей
+    let swipeStart = null;
+    
+    function handleTouchStart(e) {
+      if (e.touches.length === 1) {
+        swipeStart = {
+          x: e.touches[0].clientX,
+          y: e.touches[0].clientY,
+          time: Date.now()
+        };
+      }
+    }
+
+    function handleTouchEnd(e) {
+      if (!swipeStart) return;
+      
+      const touch = e.changedTouches[0];
+      const dx = touch.clientX - swipeStart.x;
+      const dy = touch.clientY - swipeStart.y;
+      const dt = Date.now() - swipeStart.time;
+      
+      // Если это был свайп (быстрое движение)
+      if (dt < 300 && Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy) * 1.5) {
         if (dx > 0 && currentView === 'player') {
           switchView('enemy');
         } else if (dx < 0 && currentView === 'enemy') {
           switchView('player');
         }
-        this._swipeStart = null;
+        swipeStart = null;
+        return;
       }
+      
+      // Если это был тап (короткое касание без движения)
+      if (dt < 300 && Math.abs(dx) < 20 && Math.abs(dy) < 20) {
+        if (currentView === 'enemy') {
+          handleShot(e);
+        } else {
+          handlePlayerFieldTap(e);
+        }
+      }
+      
+      swipeStart = null;
     }
 
-    // ---------- СОБЫТИЯ ----------
-    enemyCanvas.addEventListener('click', handleCanvasTap);
-    enemyCanvas.addEventListener('touchend', (e) => {
-      handleCanvasTap(e);
-      enemyCanvas._swipeStart = null;
+    // ---------- ПРИВЯЗКА СОБЫТИЙ ----------
+    // Для поля противника
+    enemyCanvas.addEventListener('click', (e) => {
+      if (currentView === 'enemy') handleShot(e);
     });
-    enemyCanvas.addEventListener('touchstart', (e) => {
-      enemyCanvas._swipeStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, time: Date.now() };
-    });
-    enemyCanvas.addEventListener('touchmove', (e) => {
-      handleCanvasSwipe.call(enemyCanvas, e);
-    });
+    
+    enemyCanvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    enemyCanvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+    enemyCanvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
 
-    playerCanvas.addEventListener('click', handleCanvasTap);
-    playerCanvas.addEventListener('touchend', (e) => {
-      handleCanvasTap(e);
-      playerCanvas._swipeStart = null;
+    // Для своего поля
+    playerCanvas.addEventListener('click', (e) => {
+      if (currentView === 'player') handlePlayerFieldTap(e);
     });
-    playerCanvas.addEventListener('touchstart', (e) => {
-      playerCanvas._swipeStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, time: Date.now() };
-    });
-    playerCanvas.addEventListener('touchmove', (e) => {
-      handleCanvasSwipe.call(playerCanvas, e);
-    });
+    
+    playerCanvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    playerCanvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+    playerCanvas.addEventListener('touchmove', (e) => e.preventDefault(), { passive: false });
 
+    // Кнопки переключения
     btnEnemy.addEventListener('click', () => switchView('enemy'));
-    btnEnemy.addEventListener('touchend', (e) => { e.preventDefault(); switchView('enemy'); });
+    btnEnemy.addEventListener('touchend', (e) => { 
+      e.preventDefault(); 
+      switchView('enemy'); 
+    });
+    
     btnPlayer.addEventListener('click', () => switchView('player'));
-    btnPlayer.addEventListener('touchend', (e) => { e.preventDefault(); switchView('player'); });
+    btnPlayer.addEventListener('touchend', (e) => { 
+      e.preventDefault(); 
+      switchView('player'); 
+    });
 
+    // Кнопка сброса
     document.getElementById('resetButton').addEventListener('click', resetGame);
     document.getElementById('resetButton').addEventListener('touchend', (e) => {
       e.preventDefault();
@@ -785,7 +905,8 @@
 
     // ---------- СБРОС ----------
     function resetGame() {
-      statusDiv.textContent = 'Генерация...';
+      statusDiv.textContent = 'Генерация кораблей...';
+      isProcessingShot = false;
       updateSizes();
       
       setTimeout(() => {
@@ -794,12 +915,14 @@
         const ed = generateShips();
         enemyBoard = ed.board; enemyShips = ed.ships;
         
-        gameOver = false; playerTurn = true; gameStarted = true;
+        gameOver = false; 
+        playerTurn = true; 
+        gameStarted = true;
         switchView('enemy');
-        statusDiv.textContent = 'Ваш ход. Стреляйте по врагу!';
+        statusDiv.textContent = '👆 Коснитесь поля для выстрела';
         updateStats();
         drawBoth();
-      }, 100);
+      }, 150);
     }
 
     // ---------- РЕСАЙЗ ----------
@@ -811,6 +934,11 @@
         drawBoth();
       }, 300);
     });
+
+    // Предотвращение нежелательного поведения на мобильных
+    document.addEventListener('gesturestart', (e) => e.preventDefault());
+    document.addEventListener('gesturechange', (e) => e.preventDefault());
+    document.addEventListener('gestureend', (e) => e.preventDefault());
 
     // ---------- ЗАПУСК ----------
     updateSizes();
