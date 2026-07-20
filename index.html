@@ -7,17 +7,15 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Морской бой">
-  <meta name="description" content="Шестигранный морской бой - стратегическая игра на гексагональном поле">
+  <meta name="description" content="Шестигранный морской бой - PWA игра">
   <link rel="manifest" id="manifest">
   <title>Шестигранный морской бой</title>
   
-  <!-- PWA Manifest встроенный -->
   <script>
-    // Создаем manifest динамически
     const manifest = {
       name: "Шестигранный морской бой",
       short_name: "Морской бой",
-      description: "Стратегическая игра морской бой на шестигранном поле",
+      description: "Стратегическая игра на шестигранном поле",
       start_url: location.href,
       display: "standalone",
       orientation: "any",
@@ -29,7 +27,6 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192">
               <rect width="192" height="192" rx="32" fill="#0d1b2a"/>
               <polygon points="96,16 160,48 160,112 96,144 32,112 32,48" fill="none" stroke="#d4a853" stroke-width="6"/>
-              <polygon points="96,32 148,58 148,106 96,132 44,106 44,58" fill="none" stroke="#e6c88a" stroke-width="4"/>
               <polygon points="96,48 136,68 136,100 96,120 56,100 56,68" fill="#4a7c59" opacity="0.8"/>
               <circle cx="96" cy="84" r="16" fill="#c0392b"/>
               <line x1="84" y1="72" x2="108" y2="96" stroke="#ffd700" stroke-width="3"/>
@@ -39,29 +36,12 @@
           sizes: "192x192",
           type: "image/svg+xml",
           purpose: "any maskable"
-        },
-        {
-          src: "data:image/svg+xml," + encodeURIComponent(`
-            <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-              <rect width="512" height="512" rx="64" fill="#0d1b2a"/>
-              <polygon points="256,48 420,140 420,324 256,416 92,324 92,140" fill="none" stroke="#d4a853" stroke-width="8"/>
-              <polygon points="256,80 396,156 396,308 256,384 116,308 116,156" fill="none" stroke="#e6c88a" stroke-width="6"/>
-              <polygon points="256,112 372,176 372,288 256,352 140,288 140,176" fill="#4a7c59" opacity="0.3"/>
-              <circle cx="256" cy="232" r="32" fill="#c0392b"/>
-              <line x1="232" y1="208" x2="280" y2="256" stroke="#ffd700" stroke-width="5"/>
-              <line x1="280" y1="208" x2="232" y2="256" stroke="#ffd700" stroke-width="5"/>
-            </svg>
-          `),
-          sizes: "512x512",
-          type: "image/svg+xml",
-          purpose: "any maskable"
         }
       ]
     };
     
     const manifestBlob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
-    const manifestURL = URL.createObjectURL(manifestBlob);
-    document.getElementById('manifest').href = manifestURL;
+    document.getElementById('manifest').href = URL.createObjectURL(manifestBlob);
   </script>
 
   <style>
@@ -79,147 +59,135 @@
       height: 100%;
       overflow-x: hidden;
       touch-action: manipulation;
+      background: #0d1b2a;
     }
 
     body {
-      background: linear-gradient(145deg, #0d1b2a 0%, #1b2838 100%);
-      min-height: 100vh;
-      min-height: -webkit-fill-available;
+      font-family: 'Segoe UI', 'Arial', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-family: 'Segoe UI', 'Arial', sans-serif;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
       padding: 10px;
-      margin: 0;
     }
 
     .game-container {
       background: rgba(20, 30, 45, 0.85);
       backdrop-filter: blur(15px);
       -webkit-backdrop-filter: blur(15px);
-      border-radius: 30px;
-      padding: 15px;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 12px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
       border: 1px solid rgba(255, 255, 255, 0.2);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
-      max-width: 100%;
+      gap: 10px;
       width: 100%;
+      max-width: 600px;
     }
 
     h1 {
       color: #e6c88a;
-      text-shadow: 0 3px 8px #00000060;
-      font-size: clamp(1.2rem, 4vw, 1.8rem);
+      font-size: clamp(1rem, 4vw, 1.5rem);
       letter-spacing: 2px;
       font-weight: 500;
       text-align: center;
     }
 
-    .boards {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 15px;
+    .board-area {
+      position: relative;
       width: 100%;
-    }
-
-    .board-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
-      flex: 1;
-      min-width: 280px;
       max-width: 500px;
-    }
-
-    .board-label {
-      color: #c0d0e0;
-      font-weight: bold;
-      font-size: clamp(0.8rem, 2.5vw, 1rem);
-      background: #1a2a3a;
-      padding: 4px 16px;
-      border-radius: 25px;
-      letter-spacing: 1px;
-      box-shadow: 0 4px 10px #00000040;
-      border-bottom: 2px solid #d4a853;
+      aspect-ratio: 1 / 1;
     }
 
     canvas {
-      display: block;
-      border-radius: 20px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 15px;
       background: #0a1620;
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.8), inset 0 0 30px #1e3348;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+
+    #enemyCanvas {
+      z-index: 2;
       cursor: crosshair;
-      width: 100%;
-      height: auto;
-      aspect-ratio: 1 / 1;
-      touch-action: manipulation;
     }
 
-    .controls {
+    #playerCanvas {
+      z-index: 1;
+    }
+
+    .view-enemy #enemyCanvas {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    .view-enemy #playerCanvas {
+      opacity: 0;
+      transform: scale(0.95);
+      pointer-events: none;
+    }
+
+    .view-player #enemyCanvas {
+      opacity: 0;
+      transform: scale(0.95);
+      pointer-events: none;
+    }
+
+    .view-player #playerCanvas {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    .toggle-buttons {
       display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 5px;
+      gap: 8px;
       width: 100%;
+      max-width: 500px;
     }
 
-    button {
-      background: linear-gradient(180deg, #e8bc6e 0%, #c48a35 100%);
-      border: none;
-      padding: clamp(8px, 2vw, 12px) clamp(16px, 4vw, 28px);
-      border-radius: 40px;
-      font-weight: bold;
-      font-size: clamp(0.8rem, 2.5vw, 1rem);
-      letter-spacing: 1px;
-      color: #0d1f2d;
-      box-shadow: 0 6px 0 #6b4518, 0 6px 15px black;
-      border: 1px solid #f0d090;
-      cursor: pointer;
-      transition: all 0.08s ease;
-      text-transform: uppercase;
-      touch-action: manipulation;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    button:active {
-      transform: translateY(3px);
-      box-shadow: 0 3px 0 #6b4518, 0 4px 10px black;
-    }
-
-    .message-area {
-      font-size: clamp(0.75rem, 2.5vw, 1rem);
-      font-weight: bold;
-      color: #ffe9b0;
-      background: #0d1a26;
-      padding: 8px 16px;
-      border-radius: 25px;
-      min-height: 38px;
-      display: flex;
-      align-items: center;
-      box-shadow: inset 0 2px 8px #00000070;
-      text-align: center;
+    .toggle-btn {
       flex: 1;
-      justify-content: center;
+      padding: 10px;
+      border-radius: 25px;
+      border: 2px solid #d4a853;
+      background: rgba(26, 42, 58, 0.8);
+      color: #c0d0e0;
+      font-weight: bold;
+      font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      touch-action: manipulation;
+    }
+
+    .toggle-btn.active {
+      background: #d4a853;
+      color: #0d1f2d;
+      border-color: #e6c88a;
+      box-shadow: 0 0 15px rgba(212, 168, 83, 0.5);
     }
 
     .stats-panel {
       display: flex;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
       justify-content: center;
       background: rgba(0, 0, 0, 0.3);
       border-radius: 15px;
-      padding: 8px 15px;
+      padding: 8px 12px;
       border: 1px solid rgba(255, 255, 255, 0.15);
       width: 100%;
+      max-width: 500px;
     }
 
     .stat-item {
@@ -227,16 +195,59 @@
       align-items: center;
       gap: 4px;
       color: #cddcec;
-      font-size: clamp(0.65rem, 2vw, 0.85rem);
+      font-size: clamp(0.6rem, 2vw, 0.8rem);
       font-weight: bold;
-      white-space: nowrap;
     }
 
     .counter {
       color: #ffd700;
       font-weight: bold;
-      min-width: 35px;
+      min-width: 30px;
       text-align: center;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    button {
+      background: linear-gradient(180deg, #e8bc6e 0%, #c48a35 100%);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: bold;
+      font-size: clamp(0.75rem, 2.5vw, 0.9rem);
+      letter-spacing: 1px;
+      color: #0d1f2d;
+      box-shadow: 0 5px 0 #6b4518, 0 5px 12px black;
+      cursor: pointer;
+      transition: all 0.08s ease;
+      text-transform: uppercase;
+      touch-action: manipulation;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    button:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #6b4518, 0 3px 8px black;
+    }
+
+    .message-area {
+      font-size: clamp(0.7rem, 2.5vw, 0.9rem);
+      font-weight: bold;
+      color: #ffe9b0;
+      background: #0d1a26;
+      padding: 8px 12px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: inset 0 2px 8px #00000070;
+      flex: 2;
     }
 
     .install-prompt {
@@ -245,185 +256,96 @@
       color: #ffd700;
       padding: 8px 16px;
       border-radius: 20px;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       cursor: pointer;
       border: 1px solid #d4a853;
-      margin-top: 5px;
+      width: 100%;
+      text-align: center;
     }
 
-    @media (max-width: 768px) {
-      .boards {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
-      }
-      
-      .board-wrapper {
-        max-width: 100%;
-      }
-      
+    @media (max-width: 400px) {
       .game-container {
-        padding: 10px;
-        gap: 8px;
-      }
-      
-      .stats-panel {
+        padding: 8px;
         gap: 6px;
-        padding: 6px 10px;
       }
-    }
-
-    @media (display-mode: standalone) {
-      .install-prompt {
-        display: none !important;
+      .toggle-btn {
+        padding: 8px;
+        font-size: 0.7rem;
       }
-    }
-
-    /* Анимация загрузки */
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
-    }
-
-    .loading {
-      animation: pulse 1.5s ease-in-out infinite;
+      button {
+        padding: 8px 12px;
+        font-size: 0.7rem;
+      }
     }
   </style>
 </head>
 <body>
-<div class="game-container">
+<div class="game-container view-enemy" id="gameContainer">
   <h1>⚓ ШЕСТИГРАННЫЙ БОЙ ⚓</h1>
 
-  <div class="boards">
-    <div class="board-wrapper">
-      <span class="board-label">ВАШ ФЛОТ</span>
-      <canvas id="playerCanvas"></canvas>
-    </div>
-    <div class="board-wrapper">
-      <span class="board-label">ФЛОТ ПРОТИВНИКА</span>
-      <canvas id="enemyCanvas"></canvas>
-      <div class="stats-panel" id="enemyStats"></div>
-    </div>
+  <div class="board-area">
+    <canvas id="playerCanvas"></canvas>
+    <canvas id="enemyCanvas"></canvas>
   </div>
 
+  <div class="toggle-buttons">
+    <button class="toggle-btn active" id="btnEnemy">🎯 Поле противника</button>
+    <button class="toggle-btn" id="btnPlayer">🚢 Моё поле</button>
+  </div>
+
+  <div class="stats-panel" id="enemyStats"></div>
+
   <div class="controls">
-    <button id="resetButton"><span>🔄</span> Новая игра</button>
+    <button id="resetButton">🔄 Новая игра</button>
     <div class="message-area" id="statusMessage">Загрузка...</div>
   </div>
   
-  <button class="install-prompt" id="installButton" style="display:none;">
-    📱 Установить приложение
-  </button>
+  <button class="install-prompt" id="installButton">📱 Установить приложение</button>
 </div>
 
 <script>
   (function() {
-    // ---------- PWA РЕГИСТРАЦИЯ SERVICE WORKER ----------
+    // ---------- PWA SERVICE WORKER ----------
     if ('serviceWorker' in navigator) {
       const swCode = `
-        const CACHE_NAME = 'hex-battle-v3';
-        const urlsToCache = [
-          '/'
-        ];
-
-        self.addEventListener('install', event => {
-          event.waitUntil(
-            caches.open(CACHE_NAME)
-              .then(cache => cache.addAll(urlsToCache))
-              .then(() => self.skipWaiting())
-          );
+        const CACHE_NAME = 'hex-battle-v5';
+        self.addEventListener('install', e => {
+          e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['/'])).then(() => self.skipWaiting()));
         });
-
-        self.addEventListener('activate', event => {
-          event.waitUntil(
-            caches.keys().then(cacheNames => {
-              return Promise.all(
-                cacheNames.map(cacheName => {
-                  if (cacheName !== CACHE_NAME) {
-                    return caches.delete(cacheName);
-                  }
-                })
-              );
-            }).then(() => self.clients.claim())
-          );
+        self.addEventListener('activate', e => {
+          e.waitUntil(caches.keys().then(keys => Promise.all(keys.map(k => k !== CACHE_NAME ? caches.delete(k) : null))).then(() => self.clients.claim()));
         });
-
-        self.addEventListener('fetch', event => {
-          event.respondWith(
-            caches.match(event.request)
-              .then(response => response || fetch(event.request))
-          );
+        self.addEventListener('fetch', e => {
+          e.respondWith(caches.match(e.request).then(r => r || fetch(e.request)));
         });
       `;
-
       const swBlob = new Blob([swCode], { type: 'application/javascript' });
-      const swURL = URL.createObjectURL(swBlob);
-      
-      navigator.serviceWorker.register(swURL)
-        .then(reg => console.log('Service Worker зарегистрирован'))
-        .catch(err => console.log('Service Worker ошибка:', err));
+      navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
     }
 
     // ---------- УСТАНОВКА PWA ----------
     let deferredPrompt;
     const installButton = document.getElementById('installButton');
-
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
       installButton.style.display = 'block';
     });
-
     installButton.addEventListener('click', async () => {
       if (deferredPrompt) {
         deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        console.log(`Установка: ${outcome}`);
+        await deferredPrompt.userChoice;
         deferredPrompt = null;
         installButton.style.display = 'none';
       }
     });
-
     window.addEventListener('appinstalled', () => {
       installButton.style.display = 'none';
-      deferredPrompt = null;
     });
 
-    // ---------- ПАРАМЕТРЫ ИГРЫ ----------
+    // ---------- ПАРАМЕТРЫ ----------
     const ROWS = 20;
     const COLS = 20;
-    let CANVAS_SIZE = 500;
-    const PADDING = 20;
-
-    // Адаптивный размер канваса
-    function calculateCanvasSize() {
-      const maxWidth = Math.min(window.innerWidth * 0.45, 500);
-      const maxHeight = Math.min(window.innerHeight * 0.6, 500);
-      CANVAS_SIZE = Math.floor(Math.min(maxWidth, maxHeight));
-      if (CANVAS_SIZE < 250) CANVAS_SIZE = 250;
-    }
-
-    calculateCanvasSize();
-
-    function calculateHexRadius() {
-      const availableWidth = CANVAS_SIZE - 2 * PADDING;
-      const availableHeight = CANVAS_SIZE - 2 * PADDING;
-      
-      const HEX_WIDTH_FACTOR = Math.sqrt(3);
-      const widthFactor = COLS * HEX_WIDTH_FACTOR + HEX_WIDTH_FACTOR / 2;
-      const heightFactor = 1.5 * (ROWS - 1) + 2;
-      
-      const radiusByWidth = availableWidth / widthFactor;
-      const radiusByHeight = availableHeight / heightFactor;
-      
-      return Math.floor(Math.min(radiusByWidth, radiusByHeight) * 0.92);
-    }
-
-    let HEX_RADIUS = calculateHexRadius();
-    let HEX_HEIGHT = 2 * HEX_RADIUS;
-    let HEX_WIDTH = Math.sqrt(3) * HEX_RADIUS;
-
-    // УВЕЛИЧЕННЫЙ НАБОР КОРАБЛЕЙ
     const SHIPS = [
       { size: 5, count: 1 },
       { size: 4, count: 2 },
@@ -432,265 +354,162 @@
       { size: 1, count: 5 }
     ];
 
-    // ---------- СОСТОЯНИЕ ИГРЫ ----------
-    let playerBoard = [];
-    let enemyBoard = [];
-    let playerShips = [];
-    let enemyShips = [];
-    let gameOver = false;
-    let playerTurn = true;
-    let gameStarted = false;
+    // ---------- СОСТОЯНИЕ ----------
+    let playerBoard = [], enemyBoard = [];
+    let playerShips = [], enemyShips = [];
+    let gameOver = false, playerTurn = true, gameStarted = false;
+    let currentView = 'enemy'; // 'enemy' или 'player'
+    let canvasSize = 500, hexRadius = 20, hexHeight = 40, hexWidth = 34.64;
 
+    const gameContainer = document.getElementById('gameContainer');
     const statusDiv = document.getElementById('statusMessage');
     const enemyStatsDiv = document.getElementById('enemyStats');
     const playerCanvas = document.getElementById('playerCanvas');
     const enemyCanvas = document.getElementById('enemyCanvas');
     const ctxPlayer = playerCanvas.getContext('2d');
     const ctxEnemy = enemyCanvas.getContext('2d');
+    const btnEnemy = document.getElementById('btnEnemy');
+    const btnPlayer = document.getElementById('btnPlayer');
 
-    function updateCanvasSizes() {
-      calculateCanvasSize();
-      HEX_RADIUS = calculateHexRadius();
-      HEX_HEIGHT = 2 * HEX_RADIUS;
-      HEX_WIDTH = Math.sqrt(3) * HEX_RADIUS;
+    // ---------- РАЗМЕРЫ ----------
+    function updateSizes() {
+      const boardArea = document.querySelector('.board-area');
+      const rect = boardArea.getBoundingClientRect();
+      canvasSize = Math.floor(Math.min(rect.width, rect.height));
+      if (canvasSize < 250) canvasSize = 250;
       
-      playerCanvas.width = CANVAS_SIZE;
-      playerCanvas.height = CANVAS_SIZE;
-      enemyCanvas.width = CANVAS_SIZE;
-      enemyCanvas.height = CANVAS_SIZE;
+      const padding = canvasSize * 0.05;
+      const availableW = canvasSize - 2 * padding;
+      const availableH = canvasSize - 2 * padding;
+      
+      const wf = COLS * Math.sqrt(3) + Math.sqrt(3) / 2;
+      const hf = 1.5 * (ROWS - 1) + 2;
+      
+      hexRadius = Math.floor(Math.min(availableW / wf, availableH / hf) * 0.92);
+      hexHeight = 2 * hexRadius;
+      hexWidth = Math.sqrt(3) * hexRadius;
+      
+      [playerCanvas, enemyCanvas].forEach(c => {
+        c.width = canvasSize;
+        c.height = canvasSize;
+      });
     }
 
-    updateCanvasSizes();
-
-    // ---------- ЦЕНТР ШЕСТИУГОЛЬНИКА ----------
+    // ---------- КООРДИНАТЫ ----------
     function hexCenter(row, col) {
-      const gridWidth = (COLS - 1) * HEX_WIDTH + HEX_WIDTH;
-      const gridHeight = (ROWS - 1) * (HEX_HEIGHT * 0.75) + HEX_HEIGHT;
-      
-      const offsetX = (CANVAS_SIZE - gridWidth) / 2 + HEX_WIDTH / 2;
-      const offsetY = (CANVAS_SIZE - gridHeight) / 2 + HEX_RADIUS;
-      
-      const x = offsetX + col * HEX_WIDTH + (row % 2) * (HEX_WIDTH / 2);
-      const y = offsetY + row * (HEX_HEIGHT * 0.75);
-      
-      return { x, y };
+      const gridW = (COLS - 1) * hexWidth + hexWidth;
+      const gridH = (ROWS - 1) * (hexHeight * 0.75) + hexHeight;
+      const ox = (canvasSize - gridW) / 2 + hexWidth / 2;
+      const oy = (canvasSize - gridH) / 2 + hexRadius;
+      return {
+        x: ox + col * hexWidth + (row % 2) * (hexWidth / 2),
+        y: oy + row * (hexHeight * 0.75)
+      };
     }
 
-    // ---------- СОСЕДИ ----------
     function getHexNeighbors(row, col) {
-      const parity = row % 2;
-      const directionsOdd = [
-        { dr: 0, dc: 1 }, { dr: 1, dc: 0 }, { dr: 1, dc: -1 },
-        { dr: 0, dc: -1 }, { dr: -1, dc: -1 }, { dr: -1, dc: 0 }
-      ];
-      const directionsEven = [
-        { dr: 0, dc: 1 }, { dr: 1, dc: 1 }, { dr: 1, dc: 0 },
-        { dr: 0, dc: -1 }, { dr: -1, dc: 0 }, { dr: -1, dc: 1 }
-      ];
-      const dirs = parity === 1 ? directionsOdd : directionsEven;
-      const neighbors = [];
-      for (let d of dirs) {
-        const nr = row + d.dr;
-        const nc = col + d.dc;
-        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) {
-          neighbors.push({ r: nr, c: nc });
-        }
-      }
-      return neighbors;
+      const dirs = row % 2 === 1 
+        ? [{dr:0,dc:1},{dr:1,dc:0},{dr:1,dc:-1},{dr:0,dc:-1},{dr:-1,dc:-1},{dr:-1,dc:0}]
+        : [{dr:0,dc:1},{dr:1,dc:1},{dr:1,dc:0},{dr:0,dc:-1},{dr:-1,dc:0},{dr:-1,dc:1}];
+      return dirs.map(d => ({r: row+d.dr, c: col+d.dc}))
+        .filter(p => p.r >= 0 && p.r < ROWS && p.c >= 0 && p.c < COLS);
     }
 
-    function isValidCell(r, c) {
-      return r >= 0 && r < ROWS && c >= 0 && c < COLS;
-    }
-
-    // ---------- ПУСТАЯ ДОСКА ----------
+    // ---------- ДОСКА ----------
     function createEmptyBoard() {
       return Array(ROWS).fill().map(() => Array(COLS).fill().map(() => ({ shipId: null, hit: false })));
     }
 
-    // ---------- ГЕНЕРАЦИЯ ПРЯМЫХ КОРАБЛЕЙ ----------
-    function getLineCells(startRow, startCol, directionType, size) {
+    // ---------- ПРЯМЫЕ КОРАБЛИ ----------
+    function getLineCells(r, c, dir, size) {
       const cells = [];
-      let currentR = startRow;
-      let currentC = startCol;
-
-      for (let step = 0; step < size; step++) {
-        if (!isValidCell(currentR, currentC)) return null;
-        cells.push({ r: currentR, c: currentC });
-
-        if (step < size - 1) {
-          const parity = currentR % 2;
-          
-          if (directionType === 0) {
-            currentC += 1;
-          } else if (directionType === 1) {
-            if (parity === 0) {
-              currentR += 1;
-              currentC -= 1;
-            } else {
-              currentR += 1;
-            }
-          } else if (directionType === 2) {
-            if (parity === 0) {
-              currentR += 1;
-            } else {
-              currentR += 1;
-              currentC += 1;
-            }
-          }
+      let cr = r, cc = c;
+      for (let s = 0; s < size; s++) {
+        if (cr < 0 || cr >= ROWS || cc < 0 || cc >= COLS) return null;
+        cells.push({ r: cr, c: cc });
+        if (s < size - 1) {
+          const p = cr % 2;
+          if (dir === 0) { cc += 1; }
+          else if (dir === 1) { cr += 1; if (p === 0) cc -= 1; }
+          else { cr += 1; if (p === 1) cc += 1; }
         }
       }
       return cells;
     }
 
-    function canPlaceShip(board, cells) {
+    function canPlace(board, cells) {
       if (!cells) return false;
-      
-      for (let cell of cells) {
-        if (board[cell.r][cell.c].shipId !== null) return false;
-      }
-      
-      for (let cell of cells) {
-        const neighbors = getHexNeighbors(cell.r, cell.c);
-        for (let n of neighbors) {
-          if (board[n.r][n.c].shipId !== null) {
-            let isPartOfSameShip = false;
-            for (let c of cells) {
-              if (c.r === n.r && c.c === n.c) {
-                isPartOfSameShip = true;
-                break;
-              }
-            }
-            if (!isPartOfSameShip) return false;
-          }
+      for (let c of cells) if (board[c.r][c.c].shipId !== null) return false;
+      for (let c of cells) {
+        for (let n of getHexNeighbors(c.r, c.c)) {
+          if (board[n.r][n.c].shipId !== null && !cells.some(x => x.r === n.r && x.c === n.c)) return false;
         }
       }
-      
       return true;
     }
 
-    function generateRandomShips() {
+    function generateShips() {
       const board = createEmptyBoard();
       const ships = [];
+      const list = [];
+      SHIPS.forEach(s => { for (let i = 0; i < s.count; i++) list.push(s.size); });
+      list.sort((a, b) => b - a);
 
-      const shipList = [];
-      SHIPS.forEach(s => {
-        for (let i = 0; i < s.count; i++) shipList.push(s.size);
-      });
-
-      shipList.sort((a, b) => b - a);
-
-      for (let size of shipList) {
+      for (let size of list) {
         let placed = false;
-        let attempts = 0;
-        const maxAttempts = 5000;
-
-        while (!placed && attempts < maxAttempts) {
-          attempts++;
-          
-          const startRow = Math.floor(Math.random() * ROWS);
-          const startCol = Math.floor(Math.random() * COLS);
-          const directionType = Math.floor(Math.random() * 3);
-
-          const cells = getLineCells(startRow, startCol, directionType, size);
-          
-          if (cells && canPlaceShip(board, cells)) {
-            const shipId = ships.length;
-            for (let cell of cells) {
-              board[cell.r][cell.c].shipId = shipId;
-            }
-            ships.push({
-              id: shipId,
-              size: size,
-              cells: cells,
-              hits: 0
-            });
+        for (let att = 0; att < 5000 && !placed; att++) {
+          const r = Math.floor(Math.random() * ROWS);
+          const c = Math.floor(Math.random() * COLS);
+          const dir = Math.floor(Math.random() * 3);
+          const cells = getLineCells(r, c, dir, size);
+          if (canPlace(board, cells)) {
+            const id = ships.length;
+            cells.forEach(cell => { board[cell.r][cell.c].shipId = id; });
+            ships.push({ id, size, cells, hits: 0 });
             placed = true;
           }
         }
-
-        if (!placed) {
-          return generateRandomShips();
-        }
+        if (!placed) return generateShips();
       }
-
       return { board, ships };
     }
 
+    // ---------- ПЕРЕКЛЮЧЕНИЕ ВИДА ----------
+    function switchView(view) {
+      currentView = view;
+      gameContainer.className = 'game-container view-' + view;
+      btnEnemy.className = 'toggle-btn' + (view === 'enemy' ? ' active' : '');
+      btnPlayer.className = 'toggle-btn' + (view === 'player' ? ' active' : '');
+      
+      if (view === 'player') {
+        statusDiv.textContent = '🔍 Просмотр своего поля';
+      } else if (gameStarted && !gameOver && playerTurn) {
+        statusDiv.textContent = 'Ваш ход. Стреляйте по врагу!';
+      }
+    }
+
     // ---------- СТАТИСТИКА ----------
-    function updateEnemyStats() {
+    function updateStats() {
       const stats = {};
-      
-      SHIPS.forEach(s => {
-        stats[s.size] = { total: s.count, sunk: 0 };
-      });
-      
+      SHIPS.forEach(s => { stats[s.size] = { total: s.count, sunk: 0 }; });
       enemyShips.forEach(ship => {
-        if (ship.hits >= ship.size) {
-          if (stats[ship.size]) {
-            stats[ship.size].sunk++;
-          }
-        }
+        if (ship.hits >= ship.size && stats[ship.size]) stats[ship.size].sunk++;
       });
       
       let html = '';
-      const sizes = Object.keys(stats).sort((a, b) => b - a);
-      
-      sizes.forEach(size => {
-        const data = stats[size];
-        const remaining = data.total - data.sunk;
-        const allSunk = remaining === 0;
-        
-        html += `
-          <div class="stat-item">
-            <span>${size}-пал:</span>
-            <span class="counter" style="color: ${allSunk ? '#e74c3c' : '#ffd700'}">
-              ${remaining}/${data.total}
-            </span>
-          </div>
-        `;
+      Object.keys(stats).sort((a,b) => b-a).forEach(size => {
+        const d = stats[size];
+        const rem = d.total - d.sunk;
+        html += `<div class="stat-item"><span>${size}-пал:</span><span class="counter" style="color:${rem===0?'#e74c3c':'#ffd700'}">${rem}/${d.total}</span></div>`;
       });
-      
       enemyStatsDiv.innerHTML = html;
     }
 
-    // ---------- СБРОС ИГРЫ ----------
-    function resetGame() {
-      statusDiv.textContent = 'Генерация кораблей...';
-      statusDiv.classList.add('loading');
-      enemyStatsDiv.innerHTML = '<span style="color: #95a5a6;">Расстановка...</span>';
-      
-      setTimeout(() => {
-        const playerData = generateRandomShips();
-        playerBoard = playerData.board;
-        playerShips = playerData.ships;
-
-        const enemyData = generateRandomShips();
-        enemyBoard = enemyData.board;
-        enemyShips = enemyData.ships;
-
-        gameOver = false;
-        playerTurn = true;
-        gameStarted = true;
-        statusDiv.textContent = 'Ваш ход. Стреляйте по врагу!';
-        statusDiv.classList.remove('loading');
-        updateEnemyStats();
-        drawBothBoards();
-      }, 100);
-    }
-
-    // ---------- ПРОВЕРКА ПОТОПЛЕНИЯ ----------
-    function checkShipSunk(ships, board) {
+    // ---------- ИГРОВЫЕ ДЕЙСТВИЯ ----------
+    function checkSunk(ships, board) {
       for (let ship of ships) {
         if (ship.hits >= ship.size) continue;
-        let allHit = true;
-        for (let cell of ship.cells) {
-          if (!board[cell.r][cell.c].hit) {
-            allHit = false;
-            break;
-          }
-        }
-        if (allHit) {
+        if (ship.cells.every(c => board[c.r][c.c].hit)) {
           ship.hits = ship.size;
           return ship;
         }
@@ -698,257 +517,303 @@
       return null;
     }
 
-    function isFleetDestroyed(ships) {
-      return ships.every(ship => ship.hits >= ship.size);
+    function fleetDestroyed(ships) {
+      return ships.every(s => s.hits >= s.size);
     }
 
-    function countRemainingShips(ships) {
-      return ships.filter(s => s.hits < s.size).length;
-    }
-
-    // ---------- ВЫСТРЕЛ ИГРОКА ----------
     function playerFire(row, col) {
-      if (!gameStarted || gameOver || !playerTurn) return false;
-      if (enemyBoard[row][col].hit) return false;
+      if (!gameStarted || gameOver || !playerTurn || currentView !== 'enemy') return false;
+      if (enemyBoard[row][col].hit) {
+        statusDiv.textContent = '⚠️ Сюда уже стреляли!';
+        return false;
+      }
 
       enemyBoard[row][col].hit = true;
-      let hitShip = false;
-      const shipId = enemyBoard[row][col].shipId;
-
-      if (shipId !== null) {
-        hitShip = true;
-        const ship = enemyShips.find(s => s.id === shipId);
+      let hit = false;
+      const sid = enemyBoard[row][col].shipId;
+      if (sid !== null) {
+        hit = true;
+        const ship = enemyShips.find(s => s.id === sid);
         if (ship) ship.hits++;
       }
 
-      const sunkShip = checkShipSunk(enemyShips, enemyBoard);
+      const sunk = checkSunk(enemyShips, enemyBoard);
+      updateStats();
       
-      updateEnemyStats();
-      
-      if (sunkShip) {
-        const remaining = countRemainingShips(enemyShips);
-        statusDiv.textContent = `⚡ Потоплен ${sunkShip.size}-палубный! Осталось: ${remaining} кораблей.`;
-      } else if (hitShip) {
+      if (sunk) {
+        statusDiv.textContent = `⚡ Потоплен ${sunk.size}-палубный! Осталось: ${enemyShips.filter(s=>s.hits<s.size).length} кораблей.`;
+      } else if (hit) {
         statusDiv.textContent = '🎯 Попадание! Ходите ещё раз.';
       } else {
         statusDiv.textContent = '💧 Мимо. Ход противника.';
       }
 
-      drawBothBoards();
+      drawBoth();
 
-      if (isFleetDestroyed(enemyShips)) {
-        gameOver = true;
-        gameStarted = false;
-        statusDiv.textContent = '🏆 ВЫ ПОБЕДИЛИ! Весь вражеский флот уничтожен.';
-        drawBothBoards();
+      if (fleetDestroyed(enemyShips)) {
+        gameOver = true; gameStarted = false;
+        statusDiv.textContent = '🏆 ВЫ ПОБЕДИЛИ!';
+        drawBoth();
         return true;
       }
 
-      if (!hitShip) {
+      if (!hit) {
         playerTurn = false;
-        setTimeout(() => enemyMove(), 600);
+        setTimeout(enemyMove, 600);
       }
       return true;
     }
 
-    // ---------- ХОД КОМПЬЮТЕРА ----------
     function enemyMove() {
       if (gameOver || playerTurn || !gameStarted) return;
-
-      const availableCells = [];
-      for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-          if (!playerBoard[r][c].hit) {
-            availableCells.push({ r, c });
-          }
-        }
-      }
-
-      if (availableCells.length === 0) return;
-
-      const randomIndex = Math.floor(Math.random() * availableCells.length);
-      const { r, c } = availableCells[randomIndex];
-
+      
+      const available = [];
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS; c++)
+          if (!playerBoard[r][c].hit) available.push({r,c});
+      
+      if (available.length === 0) return;
+      
+      const {r, c} = available[Math.floor(Math.random() * available.length)];
       playerBoard[r][c].hit = true;
-      let hitShip = false;
-      const shipId = playerBoard[r][c].shipId;
-
-      if (shipId !== null) {
-        hitShip = true;
-        const ship = playerShips.find(s => s.id === shipId);
+      
+      let hit = false;
+      const sid = playerBoard[r][c].shipId;
+      if (sid !== null) {
+        hit = true;
+        const ship = playerShips.find(s => s.id === sid);
         if (ship) ship.hits++;
       }
-
-      const sunkShip = checkShipSunk(playerShips, playerBoard);
-      if (sunkShip) {
-        statusDiv.textContent = `💥 Противник потопил ваш ${sunkShip.size}-палубный!`;
-      } else if (hitShip) {
-        statusDiv.textContent = '😖 Противник попал! Он стреляет снова.';
+      
+      const sunk = checkSunk(playerShips, playerBoard);
+      if (sunk) {
+        statusDiv.textContent = `💥 Противник потопил ваш ${sunk.size}-палубный!`;
+      } else if (hit) {
+        statusDiv.textContent = '😖 Противник попал! Стреляет снова.';
       } else {
         statusDiv.textContent = '🌊 Противник промахнулся. Ваш ход.';
+        if (currentView === 'player') switchView('enemy');
       }
-
-      drawBothBoards();
-
-      if (isFleetDestroyed(playerShips)) {
-        gameOver = true;
-        gameStarted = false;
-        statusDiv.textContent = '💀 ВЫ ПРОИГРАЛИ. Ваш флот уничтожен.';
-        drawBothBoards();
+      
+      drawBoth();
+      
+      if (fleetDestroyed(playerShips)) {
+        gameOver = true; gameStarted = false;
+        statusDiv.textContent = '💀 ВЫ ПРОИГРАЛИ.';
+        drawBoth();
         return;
       }
-
-      if (!hitShip) {
+      
+      if (!hit) {
         playerTurn = true;
       } else {
-        if (!isFleetDestroyed(playerShips) && !gameOver) {
-          setTimeout(() => enemyMove(), 500);
-        }
+        setTimeout(enemyMove, 500);
       }
     }
 
     // ---------- РИСОВАНИЕ ----------
-    function drawBoard(ctx, board, ships, isEnemy = false) {
-      ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    function drawBoard(ctx, board, ships, showShips) {
+      ctx.clearRect(0, 0, canvasSize, canvasSize);
       ctx.fillStyle = '#0a1620';
-      ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-
-      for (let row = 0; row < ROWS; row++) {
-        for (let col = 0; col < COLS; col++) {
-          const { x, y } = hexCenter(row, col);
-          drawHex(ctx, x, y, HEX_RADIUS, row, col, board, ships, isEnemy);
-        }
-      }
-    }
-
-    function drawHex(ctx, cx, cy, radius, row, col, board, ships, isEnemy) {
-      const cell = board[row][col];
-      const shipId = cell.shipId;
-      const isHit = cell.hit;
-
-      let fillColor = '#1a3550';
-
-      if (isHit) {
-        if (shipId !== null) {
-          fillColor = '#c0392b';
-        } else {
-          fillColor = '#3a6080';
-        }
-      } else if (!isEnemy && shipId !== null) {
-        fillColor = '#4a7c59';
-      }
-
-      ctx.beginPath();
-      for (let i = 0; i < 6; i++) {
-        const angle = Math.PI / 6 + i * (Math.PI / 3);
-        const hx = cx + radius * Math.cos(angle);
-        const hy = cy + radius * Math.sin(angle);
-        if (i === 0) ctx.moveTo(hx, hy);
-        else ctx.lineTo(hx, hy);
-      }
-      ctx.closePath();
-
-      ctx.fillStyle = fillColor;
-      ctx.fill();
-      ctx.strokeStyle = '#8b7d5c';
-      ctx.lineWidth = 0.8;
-      ctx.stroke();
-
-      if (shipId !== null && isHit) {
-        const ship = ships.find(s => s.id === shipId);
-        if (ship && ship.hits >= ship.size) {
-          ctx.save();
-          ctx.strokeStyle = '#ffd700';
-          ctx.lineWidth = 1.5;
-          const s = radius * 0.35;
-          ctx.beginPath();
-          ctx.moveTo(cx - s, cy - s);
-          ctx.lineTo(cx + s, cy + s);
-          ctx.moveTo(cx + s, cy - s);
-          ctx.lineTo(cx - s, cy + s);
-          ctx.stroke();
-          ctx.restore();
-        }
-      }
-
-      if (isHit && shipId === null) {
-        ctx.beginPath();
-        ctx.arc(cx, cy, radius * 0.12, 0, Math.PI * 2);
-        ctx.fillStyle = '#d0d0d0';
-        ctx.fill();
-      }
-    }
-
-    function drawBothBoards() {
-      drawBoard(ctxPlayer, playerBoard, playerShips, false);
-      drawBoard(ctxEnemy, enemyBoard, enemyShips, true);
-    }
-
-    // ---------- ОБРАБОТКА КЛИКОВ И ТАЧЕЙ ----------
-    function getHexFromCoord(canvas, clientX, clientY) {
-      const rect = canvas.getBoundingClientRect();
-      const scaleX = CANVAS_SIZE / rect.width;
-      const scaleY = CANVAS_SIZE / rect.height;
-
-      const mouseX = (clientX - rect.left) * scaleX;
-      const mouseY = (clientY - rect.top) * scaleY;
-
-      let minDist = Infinity;
-      let targetRow = -1, targetCol = -1;
+      ctx.fillRect(0, 0, canvasSize, canvasSize);
 
       for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
-          const { x, y } = hexCenter(r, c);
-          const dx = mouseX - x;
-          const dy = mouseY - y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
+          const {x, y} = hexCenter(r, c);
+          const cell = board[r][c];
+          let color = '#1a3550';
+          
+          if (cell.hit) {
+            color = cell.shipId !== null ? '#c0392b' : '#3a6080';
+          } else if (showShips && cell.shipId !== null) {
+            color = '#4a7c59';
+          }
+          
+          ctx.beginPath();
+          for (let i = 0; i < 6; i++) {
+            const a = Math.PI/6 + i * Math.PI/3;
+            const hx = x + hexRadius * Math.cos(a);
+            const hy = y + hexRadius * Math.sin(a);
+            i === 0 ? ctx.moveTo(hx, hy) : ctx.lineTo(hx, hy);
+          }
+          ctx.closePath();
+          ctx.fillStyle = color;
+          ctx.fill();
+          ctx.strokeStyle = '#8b7d5c';
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
 
-          if (dist < minDist && dist < HEX_RADIUS * 0.8) {
-            minDist = dist;
-            targetRow = r;
-            targetCol = c;
+          if (cell.hit && cell.shipId !== null) {
+            const ship = ships.find(s => s.id === cell.shipId);
+            if (ship && ship.hits >= ship.size) {
+              ctx.strokeStyle = '#ffd700';
+              ctx.lineWidth = 1.5;
+              const s = hexRadius * 0.35;
+              ctx.beginPath();
+              ctx.moveTo(x-s, y-s); ctx.lineTo(x+s, y+s);
+              ctx.moveTo(x+s, y-s); ctx.lineTo(x-s, y+s);
+              ctx.stroke();
+            }
+          }
+          
+          if (cell.hit && cell.shipId === null) {
+            ctx.beginPath();
+            ctx.arc(x, y, hexRadius * 0.12, 0, Math.PI*2);
+            ctx.fillStyle = '#d0d0d0';
+            ctx.fill();
           }
         }
       }
-      return { row: targetRow, col: targetCol };
     }
 
-    function handleEnemyCanvasInteraction(e) {
+    function drawBoth() {
+      drawBoard(ctxPlayer, playerBoard, playerShips, true);
+      drawBoard(ctxEnemy, enemyBoard, enemyShips, false);
+    }
+
+    // ---------- ОБРАБОТКА КАСАНИЙ/КЛИКОВ ----------
+    function getHexFromEvent(e) {
+      const canvas = currentView === 'enemy' ? enemyCanvas : playerCanvas;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvasSize / rect.width;
+      const scaleY = canvasSize / rect.height;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const mx = (clientX - rect.left) * scaleX;
+      const my = (clientY - rect.top) * scaleY;
+
+      let best = { row: -1, col: -1, dist: Infinity };
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const {x, y} = hexCenter(r, c);
+          const d = Math.hypot(mx - x, my - y);
+          if (d < best.dist && d < hexRadius * 0.8) {
+            best = { row: r, col: c, dist: d };
+          }
+        }
+      }
+      return { row: best.row, col: best.col };
+    }
+
+    function handleCanvasTap(e) {
       e.preventDefault();
-      if (!gameStarted || gameOver || !playerTurn) {
-        statusDiv.textContent = gameOver ? 'Игра завершена. Нажмите "Новая игра".' : 'Сейчас не ваш ход.';
+      
+      if (currentView === 'enemy') {
+        if (!gameStarted || gameOver || !playerTurn) {
+          statusDiv.textContent = gameOver ? 'Игра завершена.' : 'Сейчас не ваш ход.';
+          return;
+        }
+        const {row, col} = getHexFromEvent(e);
+        if (row >= 0 && col >= 0) playerFire(row, col);
+      } else {
+        // В режиме просмотра своего поля показываем информацию
+        const {row, col} = getHexFromEvent(e);
+        if (row >= 0 && col >= 0) {
+          const cell = playerBoard[row][col];
+          if (cell.shipId !== null) {
+            const ship = playerShips.find(s => s.id === cell.shipId);
+            const status = ship.hits >= ship.size ? 'потоплен' : 
+                          cell.hit ? 'подбит' : 'цел';
+            statusDiv.textContent = `🚢 ${ship.size}-палубный корабль (${status})`;
+          } else if (cell.hit) {
+            statusDiv.textContent = '💧 Пустая клетка (промах противника)';
+          } else {
+            statusDiv.textContent = '🌊 Пустая клетка';
+          }
+        }
+      }
+    }
+
+    function handleCanvasSwipe(e) {
+      // Свайп влево/вправо для переключения полей
+      if (!e.touches || e.touches.length === 0) return;
+      const touch = e.touches[0];
+      if (!this._swipeStart) {
+        this._swipeStart = { x: touch.clientX, y: touch.clientY, time: Date.now() };
         return;
       }
       
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const dx = touch.clientX - this._swipeStart.x;
+      const dy = touch.clientY - this._swipeStart.y;
+      const dt = Date.now() - this._swipeStart.time;
       
-      const { row, col } = getHexFromCoord(enemyCanvas, clientX, clientY);
-      if (row === -1 || col === -1) return;
-      playerFire(row, col);
+      if (dt < 500 && Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) {
+        if (dx > 0 && currentView === 'player') {
+          switchView('enemy');
+        } else if (dx < 0 && currentView === 'enemy') {
+          switchView('player');
+        }
+        this._swipeStart = null;
+      }
     }
 
     // ---------- СОБЫТИЯ ----------
-    enemyCanvas.addEventListener('click', handleEnemyCanvasInteraction);
-    enemyCanvas.addEventListener('touchend', handleEnemyCanvasInteraction);
-    
+    enemyCanvas.addEventListener('click', handleCanvasTap);
+    enemyCanvas.addEventListener('touchend', (e) => {
+      handleCanvasTap(e);
+      enemyCanvas._swipeStart = null;
+    });
+    enemyCanvas.addEventListener('touchstart', (e) => {
+      enemyCanvas._swipeStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, time: Date.now() };
+    });
+    enemyCanvas.addEventListener('touchmove', (e) => {
+      handleCanvasSwipe.call(enemyCanvas, e);
+    });
+
+    playerCanvas.addEventListener('click', handleCanvasTap);
+    playerCanvas.addEventListener('touchend', (e) => {
+      handleCanvasTap(e);
+      playerCanvas._swipeStart = null;
+    });
+    playerCanvas.addEventListener('touchstart', (e) => {
+      playerCanvas._swipeStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, time: Date.now() };
+    });
+    playerCanvas.addEventListener('touchmove', (e) => {
+      handleCanvasSwipe.call(playerCanvas, e);
+    });
+
+    btnEnemy.addEventListener('click', () => switchView('enemy'));
+    btnEnemy.addEventListener('touchend', (e) => { e.preventDefault(); switchView('enemy'); });
+    btnPlayer.addEventListener('click', () => switchView('player'));
+    btnPlayer.addEventListener('touchend', (e) => { e.preventDefault(); switchView('player'); });
+
     document.getElementById('resetButton').addEventListener('click', resetGame);
     document.getElementById('resetButton').addEventListener('touchend', (e) => {
       e.preventDefault();
       resetGame();
     });
 
-    // Адаптивный ресайз
-    let resizeTimeout;
+    // ---------- СБРОС ----------
+    function resetGame() {
+      statusDiv.textContent = 'Генерация...';
+      updateSizes();
+      
+      setTimeout(() => {
+        const pd = generateShips();
+        playerBoard = pd.board; playerShips = pd.ships;
+        const ed = generateShips();
+        enemyBoard = ed.board; enemyShips = ed.ships;
+        
+        gameOver = false; playerTurn = true; gameStarted = true;
+        switchView('enemy');
+        statusDiv.textContent = 'Ваш ход. Стреляйте по врагу!';
+        updateStats();
+        drawBoth();
+      }, 100);
+    }
+
+    // ---------- РЕСАЙЗ ----------
+    let resizeTimer;
     window.addEventListener('resize', () => {
-      clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(() => {
-        updateCanvasSizes();
-        drawBothBoards();
-      }, 250);
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        updateSizes();
+        drawBoth();
+      }, 300);
     });
 
-    // Запуск игры
+    // ---------- ЗАПУСК ----------
+    updateSizes();
     resetGame();
   })();
 </script>
